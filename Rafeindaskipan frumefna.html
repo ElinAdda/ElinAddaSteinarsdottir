@@ -1,0 +1,719 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Rafeindaskipan frumefna</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: top bar with three modes; each mode is a two-column workbench (orbital ladder | atom + facts) that stacks on phones. */
+:root {
+  --bg: #eaeef3;
+  --surface: #ffffff;
+  --sunk: #f3f6f9;
+  --ink: #16213a;
+  --muted: #5a6680;
+  --line: #cfd7e3;
+  --accent: #0d6b8a;
+  --accent-ink: #ffffff;
+  --s: #2a6fd6;
+  --p: #c8701b;
+  --d: #7d4fc0;
+  --good: #1d7a4a;
+  --goodbg: #e3f4ea;
+  --bad: #b3322a;
+  --badbg: #fbe8e6;
+  --nucleus: #16213a;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141d; --surface: #171f2d; --sunk: #121926; --ink: #e5ebf5; --muted: #95a2b9;
+    --line: #2a3549; --accent: #47b9dc; --accent-ink: #08121c;
+    --s: #6ea6ff; --p: #f0a459; --d: #b493f0;
+    --good: #5fd497; --goodbg: #15301f; --bad: #ff8a7f; --badbg: #36191a; --nucleus: #e5ebf5;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141d; --surface: #171f2d; --sunk: #121926; --ink: #e5ebf5; --muted: #95a2b9;
+  --line: #2a3549; --accent: #47b9dc; --accent-ink: #08121c;
+  --s: #6ea6ff; --p: #f0a459; --d: #b493f0;
+  --good: #5fd497; --goodbg: #15301f; --bad: #ff8a7f; --badbg: #36191a; --nucleus: #e5ebf5;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 18px; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.05; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+h1 small { display: block; font-family: var(--f-body); font-weight: 600; font-size: 0.9rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+h2 { font-family: var(--f-display); font-weight: 700; font-size: 1.15rem; margin: 0 0 10px; }
+.tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
+.tabs button { font: 600 0.95rem var(--f-body); border: 0; background: transparent; color: var(--muted); padding: 8px 16px; border-radius: 999px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.tabs button:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.bench { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 820px) { .bench { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-width: 0; }
+.side { display: grid; gap: 18px; min-width: 0; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+select, input[type="text"] {
+  font: 600 1rem var(--f-body); color: var(--ink); background: var(--sunk);
+  border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; min-width: 0;
+}
+select { flex: 1 1 180px; }
+.btn { font: 600 0.95rem var(--f-body); border: 1px solid var(--line); background: var(--sunk); color: var(--ink); padding: 9px 14px; border-radius: 10px; cursor: pointer; white-space: nowrap; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Orbital ladder */
+.ladder { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; }
+.axis { position: relative; border-right: 2px solid var(--line); }
+.axis span { position: absolute; top: 0; left: -2px; transform: rotate(-90deg) translateX(-100%); transform-origin: top left; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.axis::before { content: ""; position: absolute; top: -2px; right: -7px; border: 6px solid transparent; border-bottom: 9px solid var(--line); border-top: 0; }
+.rows { display: grid; gap: 8px; min-width: 0; }
+.row { display: flex; align-items: center; gap: 10px; min-height: 46px; }
+.lbl { font: 700 0.95rem var(--f-mono); width: 40px; flex: none; }
+.lbl.s { color: var(--s); } .lbl.p { color: var(--p); } .lbl.d { color: var(--d); }
+.boxes { display: flex; flex-wrap: wrap; }
+.box {
+  width: 40px; height: 44px; border: 2px solid var(--ink); margin-left: -2px;
+  display: flex; align-items: center; justify-content: center; gap: 2px;
+  font: 700 1.3rem var(--f-mono); background: var(--surface); color: var(--ink); padding: 0;
+}
+.box:first-child { margin-left: 0; }
+.box .up, .box .dn { line-height: 1; }
+.row.s .box .up, .row.s .box .dn { color: var(--s); }
+.row.p .box .up, .row.p .box .dn { color: var(--p); }
+.row.d .box .up, .row.d .box .dn { color: var(--d); }
+.box.fresh { background: var(--sunk); }
+button.box { cursor: pointer; }
+button.box:hover { background: var(--sunk); }
+.row .count { font: 500 0.85rem var(--f-mono); color: var(--muted); margin-left: auto; padding-left: 8px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 0.85rem; color: var(--muted); }
+.legend b { font-family: var(--f-mono); }
+
+/* Atom */
+.atom { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 16px; align-items: center; }
+@media (max-width: 420px) { .atom { grid-template-columns: minmax(0, 1fr); justify-items: center; } }
+.atom svg { width: 170px; height: 170px; max-width: 100%; }
+.symbol { font-family: var(--f-display); font-weight: 800; font-size: 3rem; line-height: 1; }
+.symbol sup { font-family: var(--f-mono); font-size: 0.95rem; font-weight: 500; color: var(--muted); vertical-align: top; margin-right: 4px; }
+.name { font-size: 1.1rem; font-weight: 600; }
+.shells { font: 500 0.95rem var(--f-mono); color: var(--muted); margin-top: 4px; }
+
+dl.facts { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 14px; margin: 0; }
+dl.facts dt { color: var(--muted); font-size: 0.9rem; }
+dl.facts dd { margin: 0; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.cfg { font-family: var(--f-mono); font-weight: 500; font-size: 1.05rem; }
+.cfg sup { font-size: 0.7em; }
+
+.why { border-left: 4px solid var(--accent); background: var(--sunk); padding: 10px 14px; border-radius: 0 10px 10px 0; }
+.why .rule { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; color: var(--accent); }
+
+.msg { padding: 12px 14px; border-radius: 10px; background: var(--sunk); }
+.msg.good { background: var(--goodbg); color: var(--good); }
+.msg.bad { background: var(--badbg); color: var(--bad); }
+.msg p { margin: 4px 0 0; color: var(--ink); }
+
+.rules ol { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.rules li b { font-family: var(--f-display); }
+
+.qtext { font-size: 1.15rem; margin: 0 0 12px; }
+.choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.choices .btn { white-space: normal; text-align: left; padding: 12px; }
+.choices .btn.right { background: var(--goodbg); border-color: var(--good); color: var(--good); }
+.choices .btn.wrong { background: var(--badbg); border-color: var(--bad); color: var(--bad); }
+.score { font: 700 0.95rem var(--f-mono); color: var(--muted); }
+.hint { font-size: 0.88rem; color: var(--muted); margin-top: 8px; }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 4px; background: var(--sunk); border: 1px solid var(--line); border-radius: 12px; padding: 4px; margin-bottom: 12px; }
+.seg button { font: 600 0.92rem var(--f-body); border: 0; background: transparent; color: var(--muted); padding: 7px 14px; border-radius: 9px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--line); }
+.stepper { display: flex; align-items: center; gap: 6px; }
+.stepper .btn { width: 38px; height: 40px; padding: 0; font-size: 1.2rem; }
+.stepper input { width: 58px; height: 40px; text-align: center; font: 700 1.1rem var(--f-mono); color: var(--ink); background: var(--surface); border: 2px solid var(--ink); border-radius: 8px; }
+.row.s .stepper input { border-color: var(--s); } .row.p .stepper input { border-color: var(--p); } .row.d .stepper input { border-color: var(--d); }
+.calc { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 4px 10px; font-family: var(--f-mono); font-variant-numeric: tabular-nums; align-items: baseline; }
+.calc .op { color: var(--muted); text-align: center; }
+.calc .num { text-align: right; font-weight: 700; }
+.calc .what { color: var(--muted); font-family: var(--f-body); }
+.calc .total { grid-column: 1 / -1; border-top: 2px solid var(--ink); margin-top: 4px; }
+.calc .res { font-size: 1.3rem; }
+.calc .res.zero { color: var(--good); } .calc .res.neg { color: var(--bad); }
+.answer-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.answer-row input { flex: 1 1 240px; font-family: var(--f-mono); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .box.fresh { animation: pop 0.35s ease-out; }
+  @keyframes pop { from { transform: scale(0.85); } to { transform: scale(1); } }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>Efnafræði · Z = 1–36</small>Rafeindaskipan frumefna</h1>
+    <nav class="tabs" role="tablist" aria-label="Hamir">
+      <button role="tab" id="tab-kanna" aria-selected="true">Kanna</button>
+      <button role="tab" id="tab-byggja" aria-selected="false">Byggja</button>
+      <button role="tab" id="tab-prof" aria-selected="false">Æfing</button>
+    </nav>
+  </header>
+
+  <!-- KANNA -->
+  <section id="view-kanna" class="bench">
+    <div class="panel">
+      <div class="controls">
+        <button class="btn" id="k-prev" aria-label="Fyrra frumefni">◀</button>
+        <select id="k-el" aria-label="Veldu frumefni"></select>
+        <button class="btn primary" id="k-next">Bæta við rafeind ▶</button>
+      </div>
+      <div class="ladder">
+        <div class="axis" aria-hidden="true"><span>Orka</span></div>
+        <div class="rows" id="k-rows"></div>
+      </div>
+      <div class="legend">
+        <span><b style="color:var(--s)">s</b> 1 svigrúm, mest 2 e⁻</span>
+        <span><b style="color:var(--p)">p</b> 3 svigrúm, mest 6 e⁻</span>
+        <span><b style="color:var(--d)">d</b> 5 svigrúm, mest 10 e⁻</span>
+      </div>
+    </div>
+    <div class="side">
+      <div class="panel">
+        <div class="atom">
+          <svg id="k-atom" viewBox="0 0 240 240" role="img" aria-label="Hvolfalíkan"></svg>
+          <div>
+            <div class="symbol" id="k-sym"></div>
+            <div class="name" id="k-name"></div>
+            <div class="shells" id="k-shells"></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel why" id="k-why" aria-live="polite"></div>
+      <div class="panel">
+        <dl class="facts">
+          <dt>Rafeindaskipan</dt><dd class="cfg" id="k-full"></dd>
+          <dt>Stytt form</dt><dd class="cfg" id="k-short"></dd>
+          <dt>Lota</dt><dd id="k-period"></dd>
+          <dt>Flokkur</dt><dd id="k-group"></dd>
+          <dt>Blokk</dt><dd id="k-block"></dd>
+          <dt>Í ysta hvolfi</dt><dd id="k-outer"></dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- BYGGJA -->
+  <section id="view-byggja" class="bench" hidden>
+    <div class="panel">
+      <div class="controls">
+        <select id="b-el" aria-label="Frumefni sem á að byggja"></select>
+        <button class="btn" id="b-rand">Handahófs</button>
+      </div>
+      <div class="seg" role="group" aria-label="Hvernig á að raða">
+        <button id="b-mode-box" aria-pressed="true">Í svigrúm ↑↓</button>
+        <button id="b-mode-num" aria-pressed="false">Beint í orkuborð</button>
+      </div>
+      <p style="margin:0 0 12px" id="b-help"></p>
+      <div class="ladder">
+        <div class="axis" aria-hidden="true"><span>Orka</span></div>
+        <div class="rows" id="b-rows"></div>
+      </div>
+      <div class="controls" style="margin:14px 0 0">
+        <button class="btn primary" id="b-check">Athuga</button>
+        <button class="btn" id="b-clear">Hreinsa</button>
+        <button class="btn" id="b-show">Sýna lausn</button>
+        <span class="score" id="b-count"></span>
+      </div>
+    </div>
+    <div class="side">
+      <div class="panel" id="b-msg" aria-live="polite">
+        <div class="msg">Fylltu svigrúmin og ýttu á <b>Athuga</b>.</div>
+      </div>
+      <div class="panel">
+        <h2>Reiknivél</h2>
+        <p class="hint" style="margin:0 0 10px">Dregur frá jafnóðum þær rafeindir sem þú hefur raðað.</p>
+        <div class="calc" id="b-calc" aria-live="polite"></div>
+      </div>
+      <div class="panel rules">
+        <h2>Reglurnar þrjár</h2>
+        <ol>
+          <li><b>Aufbau-reglan.</b> Rafeindir fara fyrst í lægsta orkuborðið sem er laust: 1s, 2s, 2p, 3s, 3p, 4s, 3d, 4p. Athugaðu að 4s er lægra en 3d.</li>
+          <li><b>Pauli-reglan.</b> Hvert svigrúm rúmar mest tvær rafeindir og þær verða að hafa gagnstæðan spuna (↑↓).</li>
+          <li><b>Hund-reglan.</b> Í p- og d-borðum fer ein rafeind í hvert svigrúm áður en byrjað er að para.</li>
+        </ol>
+        <p class="hint">Undantekningar: Cr og Cu taka eina rafeind úr 4s til að fá hálffullt eða fullt 3d-borð, sem er stöðugra.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÆFING -->
+  <section id="view-prof" class="bench" hidden>
+    <div class="panel">
+      <div class="controls" style="justify-content:space-between">
+        <h2 style="margin:0">Spurning</h2>
+        <span class="score" id="q-score">0 / 0</span>
+      </div>
+      <div id="q-body"></div>
+      <div id="q-msg" aria-live="polite" style="margin-top:14px"></div>
+      <div class="controls" style="margin:14px 0 0">
+        <button class="btn primary" id="q-next">Næsta spurning</button>
+      </div>
+    </div>
+    <div class="side">
+      <div class="panel">
+        <h2>Svona skrifarðu svarið</h2>
+        <p style="margin:0 0 8px">Skrifaðu orkuborð og fjölda rafeinda, með bili á milli:</p>
+        <p class="cfg" style="margin:0 0 8px">1s2 2s2 2p6 3s1</p>
+        <p style="margin:0 0 8px">Stytt form með eðalgasi virkar líka:</p>
+        <p class="cfg" style="margin:0 0 8px">[Ne] 3s1</p>
+        <p class="hint">Röðin skiptir ekki máli, svo 3d10 4s2 og 4s2 3d10 eru bæði rétt.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const EL = [null,
+    ["H","Vetni"],["He","Helín"],["Li","Litíum"],["Be","Beryllíum"],["B","Bór"],["C","Kolefni"],["N","Nitur"],["O","Súrefni"],["F","Flúor"],["Ne","Neon"],
+    ["Na","Natríum"],["Mg","Magnesíum"],["Al","Ál"],["Si","Kísill"],["P","Fosfór"],["S","Brennisteinn"],["Cl","Klór"],["Ar","Argon"],
+    ["K","Kalíum"],["Ca","Kalsíum"],["Sc","Skandíum"],["Ti","Títan"],["V","Vanadíum"],["Cr","Króm"],["Mn","Mangan"],["Fe","Járn"],["Co","Kóbalt"],["Ni","Nikkel"],
+    ["Cu","Kopar"],["Zn","Sink"],["Ga","Gallíum"],["Ge","German"],["As","Arsen"],["Se","Selen"],["Br","Bróm"],["Kr","Krypton"]];
+  const MAXZ = 36;
+  // Filling order (Aufbau)
+  const SS = [
+    {id:"1s",n:1,l:"s",b:1},{id:"2s",n:2,l:"s",b:1},{id:"2p",n:2,l:"p",b:3},
+    {id:"3s",n:3,l:"s",b:1},{id:"3p",n:3,l:"p",b:3},{id:"4s",n:4,l:"s",b:1},
+    {id:"3d",n:3,l:"d",b:5},{id:"4p",n:4,l:"p",b:3}];
+  const SSmap = Object.fromEntries(SS.map(s => [s.id, s]));
+  const NOBLE = [[2,"He"],[10,"Ne"],[18,"Ar"],[36,"Kr"]];
+  const SUP = {"⁰":"0","¹":"1","²":"2","³":"3","⁴":"4","⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9"};
+  const $ = id => document.getElementById(id);
+
+  function ground(Z) {
+    const c = {}; let left = Z;
+    for (const s of SS) { const k = Math.min(left, 2 * s.b); c[s.id] = k; left -= k; }
+    if (Z === 24) { c["4s"] = 1; c["3d"] = 5; }
+    if (Z === 29) { c["4s"] = 1; c["3d"] = 10; }
+    return c;
+  }
+  function boxesFor(c, b) {
+    const a = [];
+    for (let i = 0; i < b; i++) a.push((c > i ? 1 : 0) + (c - b > i ? 1 : 0));
+    return a;
+  }
+  function cfgHTML(c, core) {
+    const parts = [];
+    for (const s of SS) {
+      const k = (c[s.id] || 0) - (core ? (core[s.id] || 0) : 0);
+      if (k > 0) parts.push(`${s.id}<sup>${k}</sup>`);
+    }
+    return parts.join(" ");
+  }
+  function shortHTML(Z, c) {
+    let ng = null;
+    for (const [z, sym] of NOBLE) if (z < Z) ng = [z, sym];
+    if (!ng) return cfgHTML(c);
+    return `[${ng[1]}] ` + cfgHTML(c, ground(ng[0]));
+  }
+  function shellCounts(c) {
+    const sh = [0,0,0,0];
+    for (const s of SS) sh[s.n - 1] += c[s.id] || 0;
+    while (sh.length && sh[sh.length - 1] === 0) sh.pop();
+    return sh;
+  }
+  function info(Z) {
+    const c = ground(Z), sh = shellCounts(c), period = sh.length;
+    const outerS = c[period + "s"] || 0, outerP = c[period + "p"] || 0, d = c["3d"] || 0;
+    let block, group;
+    if (Z === 2) { block = "s"; group = 18; }
+    else if (Z >= 21 && Z <= 30) { block = "d"; group = outerS + d; }
+    else if (outerP > 0) { block = "p"; group = 10 + outerS + outerP; }
+    else { block = "s"; group = outerS; }
+    return { c, sh, period, block, group, outer: sh[period - 1] };
+  }
+
+  function rowsHTML(counts, opts) {
+    const order = [...SS].reverse();
+    return order.map(s => {
+      const arr = opts.state ? opts.state[s.id] : boxesFor(counts[s.id] || 0, s.b);
+      const total = arr.reduce((a, v) => a + v, 0);
+      const boxes = arr.map((v, i) => {
+        const inner = (v >= 1 ? '<span class="up">↑</span>' : "") + (v === 2 ? '<span class="dn">↓</span>' : "");
+        const fresh = opts.fresh && opts.fresh.id === s.id && opts.fresh.i === i ? " fresh" : "";
+        const lbl = `${s.id}, svigrúm ${i + 1}: ${v === 0 ? "tómt" : v === 1 ? "ein rafeind" : "tvær rafeindir"}`;
+        return opts.clickable
+          ? `<button class="box${fresh}" data-ss="${s.id}" data-i="${i}" aria-label="${lbl}">${inner}</button>`
+          : `<div class="box${fresh}" role="img" aria-label="${lbl}">${inner}</div>`;
+      }).join("");
+      return `<div class="row ${s.l}"><span class="lbl ${s.l}">${s.id}</span><div class="boxes">${boxes}</div><span class="count">${total}/${2 * s.b}</span></div>`;
+    }).join("");
+  }
+
+  function atomSVG(Z, c) {
+    const cx = 120, cy = 120, R = [38, 58, 80, 102];
+    let out = "";
+    const sh = shellCounts(c);
+    sh.forEach((_, i) => { out += `<circle cx="${cx}" cy="${cy}" r="${R[i]}" fill="none" stroke="var(--line)" stroke-width="2"/>`; });
+    // electrons coloured by subshell type
+    for (let n = 1; n <= sh.length; n++) {
+      const list = [];
+      for (const s of SS) if (s.n === n) for (let k = 0; k < (c[s.id] || 0); k++) list.push(s.l);
+      list.forEach((l, k) => {
+        const a = -Math.PI / 2 + (2 * Math.PI * k) / list.length;
+        out += `<circle cx="${(cx + R[n - 1] * Math.cos(a)).toFixed(1)}" cy="${(cy + R[n - 1] * Math.sin(a)).toFixed(1)}" r="5.5" fill="var(--${l})" stroke="var(--surface)" stroke-width="1.5"/>`;
+      });
+    }
+    out += `<circle cx="${cx}" cy="${cy}" r="22" fill="var(--nucleus)"/>`;
+    out += `<text x="${cx}" y="${cy + 5}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="700" font-size="14" fill="var(--surface)">${Z}+</text>`;
+    return out;
+  }
+
+  // ---------- Kanna ----------
+  let kZ = 8;
+  let kFresh = null;
+  const kSel = $("k-el"), bSel = $("b-el");
+  for (let z = 1; z <= MAXZ; z++) {
+    const t = `${z}  ${EL[z][0]} – ${EL[z][1]}`;
+    kSel.add(new Option(t, z)); bSel.add(new Option(t, z));
+  }
+
+  function whyHTML(Z) {
+    const sym = EL[Z][0];
+    const rule = (r, txt) => `<div class="rule">${r}</div><div>${txt}</div>`;
+    if (Z === 1) return rule("Aufbau", "Fyrsta rafeindin fer í lægsta orkuborðið, 1s.");
+    if (Z === 24) return rule("Undantekning", "Króm: í stað 4s² 3d⁴ færist ein rafeind úr 4s yfir í 3d. Hálffullt 3d-borð (5 stakar rafeindir) er stöðugra, svo skipanin verður 4s¹ 3d⁵.");
+    if (Z === 25) return rule("Aufbau", "Mangan: 4s fyllist aftur og 3d helst hálffullt: 4s² 3d⁵.");
+    if (Z === 29) return rule("Undantekning", "Kopar: í stað 4s² 3d⁹ færist ein rafeind úr 4s yfir í 3d. Fullt 3d-borð er stöðugra, svo skipanin verður 4s¹ 3d¹⁰.");
+    if (Z === 30) return rule("Aufbau", "Sink: 4s fyllist aftur og bæði 4s og 3d eru nú full.");
+    const prev = ground(Z - 1), cur = ground(Z);
+    const s = SS.find(x => (cur[x.id] || 0) > (prev[x.id] || 0));
+    const k = cur[s.id];
+    let txt;
+    if (k === 1 && s.id === "4s" && Z === 19)
+      txt = rule("Aufbau", "3p er fullt. Næsta rafeind fer í <b>4s</b>, ekki 3d, því 4s hefur lægri orku en 3d.");
+    else if (k === 1 && s.id === "3d")
+      txt = rule("Aufbau", "4s er fullt, svo nú byrjar <b>3d</b> að fyllast. Hér hefjast hliðarmálmarnir (d-blokkin).");
+    else if (k === 1)
+      txt = rule("Aufbau", `Lægri orkuborð eru full, svo rafeindin fer í næsta orkuborð: <b>${s.id}</b>.`);
+    else if (k <= s.b)
+      txt = rule("Hund", `Rafeindin fer í <b>tómt svigrúm</b> í ${s.id} frekar en að parast. Að hafa stakar rafeindir í sitt hvoru svigrúminu lágmarkar fráhrindikrafta milli rafeinda og gerir atómið stöðugra.`);
+    else
+      txt = rule("Pauli", `Öll svigrúm í ${s.id} hafa eina rafeind, svo nú byrjar pörun. Rafeindirnar í sama svigrúmi hafa <b>gagnstæðan spuna</b> (↑↓).`);
+    if (k === 2 * s.b) txt += `<div style="margin-top:6px">Nú er ${s.id} fullt.</div>`;
+    if (NOBLE.some(([z]) => z === Z)) txt += `<div style="margin-top:6px"><b>${sym}</b> er eðalgas: öll orkuborð í ysta hvolfi eru full.</div>`;
+    return txt;
+  }
+
+  function renderK() {
+    const I = info(kZ);
+    kSel.value = kZ;
+    $("k-rows").innerHTML = rowsHTML(I.c, { fresh: kFresh });
+    $("k-atom").innerHTML = atomSVG(kZ, I.c);
+    $("k-sym").innerHTML = `<sup>${kZ}</sup>${EL[kZ][0]}`;
+    $("k-name").textContent = EL[kZ][1];
+    const ORD = ["fyrsta", "öðru", "þriðja", "fjórða"];
+    $("k-shells").innerHTML = I.sh.map((k, i) => `<div>${k} rafeind${k === 1 ? "" : "ir"} á ${ORD[i]} hvolfi</div>`).join("");
+    $("k-full").innerHTML = cfgHTML(I.c);
+    $("k-short").innerHTML = shortHTML(kZ, I.c);
+    $("k-period").textContent = I.period;
+    $("k-group").textContent = I.group;
+    $("k-block").textContent = I.block + "-blokk";
+    $("k-outer").textContent = `${I.outer} rafeind${I.outer === 1 ? "" : "ir"} (n = ${I.period})` + (I.block === "d" ? ", auk 3d-rafeinda" : "");
+    $("k-why").innerHTML = whyHTML(kZ);
+    $("k-prev").disabled = kZ === 1;
+    $("k-next").disabled = kZ === MAXZ;
+  }
+  function freshFor(Z) {
+    if (Z < 2) return { id: "1s", i: 0 };
+    const prev = ground(Z - 1), cur = ground(Z);
+    const s = SS.find(x => (cur[x.id] || 0) > (prev[x.id] || 0));
+    if (!s) return null;
+    const k = cur[s.id];
+    return { id: s.id, i: k <= s.b ? k - 1 : k - s.b - 1 };
+  }
+  $("k-next").addEventListener("click", () => { if (kZ < MAXZ) { kZ++; kFresh = freshFor(kZ); renderK(); } });
+  $("k-prev").addEventListener("click", () => { if (kZ > 1) { kZ--; kFresh = null; renderK(); } });
+  kSel.addEventListener("change", () => { kZ = Number(kSel.value); kFresh = null; renderK(); });
+
+  // ---------- Byggja ----------
+  let bZ = 7;
+  let bMode = "box";          // "box" = svigrúm, "num" = beint í orkuborð
+  let bState = {};            // svigrúm: id -> [0|1|2, ...]
+  let bNum = {};              // beint: id -> fjöldi
+  function clearB() {
+    bState = Object.fromEntries(SS.map(s => [s.id, Array(s.b).fill(0)]));
+    bNum = Object.fromEntries(SS.map(s => [s.id, 0]));
+  }
+  function bHave() {
+    return bMode === "box"
+      ? Object.fromEntries(SS.map(s => [s.id, bState[s.id].reduce((a, v) => a + v, 0)]))
+      : { ...bNum };
+  }
+  function bTotal() { return Object.values(bHave()).reduce((a, v) => a + v, 0); }
+
+  function numRowsHTML() {
+    return [...SS].reverse().map(s => `
+      <div class="row ${s.l}">
+        <span class="lbl ${s.l}">${s.id}</span>
+        <div class="stepper">
+          <button class="btn" data-ss="${s.id}" data-d="-1" aria-label="Fækka rafeindum í ${s.id}">−</button>
+          <input type="number" id="n-${s.id}" data-ss="${s.id}" min="0" max="${2 * s.b}" value="${bNum[s.id]}" inputmode="numeric" aria-label="Fjöldi rafeinda í ${s.id}">
+          <button class="btn" data-ss="${s.id}" data-d="1" aria-label="Fjölga rafeindum í ${s.id}">+</button>
+        </div>
+        <span class="count">mest ${2 * s.b}</span>
+      </div>`).join("");
+  }
+
+  function renderCalc() {
+    const have = bHave();
+    let html = `<span class="op"></span><span class="num">${bZ}</span><span class="what">rafeindir alls (Z = ${bZ})</span>`;
+    let left = bZ;
+    for (const s of SS) {
+      const k = have[s.id];
+      if (k > 0) {
+        left -= k;
+        html += `<span class="op">−</span><span class="num">${k}</span><span class="what">í ${s.id}</span>`;
+      }
+    }
+    const cls = left === 0 ? "zero" : left < 0 ? "neg" : "";
+    const txt = left === 0 ? "allar rafeindir komnar á sinn stað" : left < 0 ? "of margar rafeindir" : "eftir að raða";
+    html += `<span class="total"></span><span class="op">=</span><span class="num res ${cls}">${left}</span><span class="what">${txt}</span>`;
+    $("b-calc").innerHTML = html;
+    $("b-count").textContent = `${bZ - left} / ${bZ} rafeindir`;
+  }
+
+  function renderB() {
+    bSel.value = bZ;
+    $("b-mode-box").setAttribute("aria-pressed", String(bMode === "box"));
+    $("b-mode-num").setAttribute("aria-pressed", String(bMode === "num"));
+    $("b-help").innerHTML = bMode === "box"
+      ? `Smelltu á svigrúm til að bæta við rafeind: <b>tómt → ↑ → ↑↓ → tómt</b>. Settu inn <b>${bZ}</b> rafeindir (${EL[bZ][1]}).`
+      : `Skrifaðu eða veldu með − og + hve margar rafeindir fara í hvert orkuborð. Settu inn <b>${bZ}</b> rafeindir (${EL[bZ][1]}).`;
+    $("b-rows").innerHTML = bMode === "box"
+      ? rowsHTML(null, { state: bState, clickable: true })
+      : numRowsHTML();
+    renderCalc();
+  }
+
+  $("b-rows").addEventListener("click", e => {
+    const box = e.target.closest("button.box");
+    if (box) {
+      const arr = bState[box.dataset.ss], i = Number(box.dataset.i);
+      arr[i] = (arr[i] + 1) % 3;
+      renderB();
+      const again = $("b-rows").querySelector(`button.box[data-ss="${box.dataset.ss}"][data-i="${i}"]`);
+      if (again) again.focus();
+      return;
+    }
+    const step = e.target.closest("button[data-d]");
+    if (step) {
+      const id = step.dataset.ss, max = 2 * SSmap[id].b;
+      bNum[id] = Math.max(0, Math.min(max, bNum[id] + Number(step.dataset.d)));
+      $("n-" + id).value = bNum[id];
+      renderCalc();
+    }
+  });
+  $("b-rows").addEventListener("input", e => {
+    const inp = e.target.closest("input[data-ss]");
+    if (!inp) return;
+    const id = inp.dataset.ss, max = 2 * SSmap[id].b;
+    let v = parseInt(inp.value, 10);
+    if (isNaN(v)) v = 0;
+    bNum[id] = Math.max(0, Math.min(max, v));
+    renderCalc();
+  });
+  $("b-rows").addEventListener("change", e => {
+    const inp = e.target.closest("input[data-ss]");
+    if (!inp) return;
+    const id = inp.dataset.ss, max = 2 * SSmap[id].b;
+    if (parseInt(inp.value, 10) > max) {
+      setBMsg("bad", "Pauli-reglan", `${id} rúmar mest ${max} rafeindir (${SSmap[id].b} svigrúm × 2).`);
+    }
+    inp.value = bNum[id];
+  });
+
+  function setMode(m) {
+    if (m === bMode) return;
+    if (m === "num") {
+      const h = bHave();
+      bNum = { ...h };
+    } else {
+      bState = Object.fromEntries(SS.map(s => [s.id, boxesFor(bNum[s.id], s.b)]));
+    }
+    bMode = m;
+    renderB();
+  }
+  $("b-mode-box").addEventListener("click", () => setMode("box"));
+  $("b-mode-num").addEventListener("click", () => setMode("num"));
+  function setBMsg(kind, title, body) {
+    $("b-msg").innerHTML = `<div class="msg ${kind}"><b>${title}</b>${body ? `<p>${body}</p>` : ""}</div>`;
+  }
+  function checkB() {
+    const want = ground(bZ), t = bTotal();
+    const have = bHave();
+    if (t !== bZ) {
+      setBMsg("bad", "Rangur fjöldi rafeinda", `${EL[bZ][1]} hefur sætistölu ${bZ}, svo hlutlaust atóm hefur ${bZ} rafeindir. Þú ert með ${t}.`);
+      return;
+    }
+    const same = SS.every(s => have[s.id] === want[s.id]);
+    if (!same) {
+      if ((bZ === 24 || bZ === 29) && have["4s"] === 2) {
+        setBMsg("bad", "Næstum! Þetta er undantekning", `${EL[bZ][1]} fylgir ekki Aufbau-reglunni alveg. Ein rafeind færist úr 4s yfir í 3d svo 3d verði ${bZ === 24 ? "hálffullt" : "fullt"}. Prófaðu 4s¹.`);
+        return;
+      }
+      const firstShort = SS.findIndex(s => have[s.id] < want[s.id]);
+      const laterUsed = SS.slice(firstShort + 1).find(s => have[s.id] > 0);
+      if (firstShort >= 0 && laterUsed) {
+        setBMsg("bad", "Aufbau-reglan", `Fylltu <b>${SS[firstShort].id}</b> áður en þú setur rafeindir í <b>${laterUsed.id}</b>. Orkuröðin er 1s, 2s, 2p, 3s, 3p, 4s, 3d, 4p.`);
+      } else {
+        setBMsg("bad", "Ekki rétt dreifing", "Fjöldinn er réttur en rafeindirnar eru í röngum orkuborðum. Byrjaðu neðst og fylltu upp eftir orkuröðinni.");
+      }
+      return;
+    }
+    if (bMode === "box") for (const s of SS) {
+      const arr = bState[s.id];
+      if (arr.includes(2) && arr.includes(0)) {
+        setBMsg("bad", "Hund-reglan", `Í <b>${s.id}</b> er parað svigrúm á meðan annað svigrúm er tómt. Settu eina rafeind í hvert svigrúm áður en þú parar.`);
+        return;
+      }
+    }
+    setBMsg("good", "Rétt!", `Rafeindaskipan ${EL[bZ][1]}: <span class="cfg">${cfgHTML(want)}</span>`);
+  }
+  $("b-check").addEventListener("click", checkB);
+  $("b-clear").addEventListener("click", () => { clearB(); renderB(); setBMsg("", "Hreinsað.", "Byrjaðu neðst í 1s."); });
+  $("b-show").addEventListener("click", () => {
+    const g = ground(bZ);
+    bState = Object.fromEntries(SS.map(s => [s.id, boxesFor(g[s.id], s.b)]));
+    bNum = { ...g };
+    renderB();
+    setBMsg("", "Lausn", `<span class="cfg">${cfgHTML(g)}</span>`);
+  });
+  function newB(z) { bZ = z; clearB(); renderB(); setBMsg("", `Byggðu ${EL[bZ][1]} (${EL[bZ][0]})`, "Raðaðu rafeindunum og ýttu á Athuga."); }
+  bSel.addEventListener("change", () => newB(Number(bSel.value)));
+  $("b-rand").addEventListener("click", () => {
+    let z; do { z = 1 + Math.floor(Math.random() * MAXZ); } while (z === bZ);
+    newB(z);
+  });
+
+  // ---------- Æfing ----------
+  let score = 0, asked = 0, q = null;
+  function parseCfg(str) {
+    let s = str.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, m => SUP[m]).replace(/\^/g, "");
+    const out = {};
+    const core = s.match(/\[\s*(He|Ne|Ar|Kr)\s*\]/i);
+    if (core) {
+      const z = NOBLE.find(([, sym]) => sym.toLowerCase() === core[1].toLowerCase())[0];
+      Object.assign(out, ground(z));
+      s = s.replace(core[0], " ");
+    }
+    const re = /([1-7])\s*([spdf])\s*(10|\d)/gi;
+    let m, any = false;
+    while ((m = re.exec(s))) {
+      any = true;
+      const key = m[1] + m[2].toLowerCase();
+      out[key] = (out[key] || 0) + Number(m[3]);
+    }
+    return (any || core) ? out : null;
+  }
+  function sameCfg(a, b) {
+    const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+    for (const k of keys) if ((a[k] || 0) !== (b[k] || 0)) return false;
+    return true;
+  }
+  function scoreTxt() { $("q-score").textContent = `${score} / ${asked}`; }
+  function newQ() {
+    const z = 1 + Math.floor(Math.random() * MAXZ);
+    const type = Math.random() < 0.5 ? "write" : "pick";
+    q = { z, type, done: false };
+    $("q-msg").innerHTML = "";
+    if (type === "write") {
+      $("q-body").innerHTML = `
+        <p class="qtext">Skrifaðu rafeindaskipan <b>${EL[z][1]}</b> (${EL[z][0]}, Z = ${z}).</p>
+        <form class="answer-row" id="q-form">
+          <input type="text" id="q-input" autocomplete="off" spellcheck="false" placeholder="t.d. 1s2 2s2 2p4" aria-label="Svar">
+          <button class="btn primary" type="submit">Svara</button>
+        </form>`;
+      $("q-form").addEventListener("submit", e => { e.preventDefault(); answerWrite(); });
+      $("q-input").focus();
+    } else {
+      const opts = new Set([z]);
+      while (opts.size < 4) {
+        const d = 1 + Math.floor(Math.random() * 4);
+        const c = z + (Math.random() < 0.5 ? -d : d);
+        if (c >= 1 && c <= MAXZ) opts.add(c);
+      }
+      const list = [...opts].sort(() => Math.random() - 0.5);
+      $("q-body").innerHTML = `
+        <p class="qtext">Hvaða frumefni hefur þessa rafeindaskipan?</p>
+        <p class="cfg" style="font-size:1.2rem;margin:0 0 14px">${cfgHTML(ground(z))}</p>
+        <div class="choices">${list.map(o => `<button class="btn" data-z="${o}">${EL[o][0]} – ${EL[o][1]}</button>`).join("")}</div>`;
+      $("q-body").querySelectorAll(".choices .btn").forEach(btn => btn.addEventListener("click", () => answerPick(btn)));
+    }
+  }
+  function answerWrite() {
+    if (q.done) return;
+    const got = parseCfg($("q-input").value);
+    if (!got) { $("q-msg").innerHTML = `<div class="msg">Ég næ ekki að lesa svarið. Skrifaðu t.d. <span class="cfg">1s2 2s2 2p4</span>.</div>`; return; }
+    q.done = true; asked++;
+    const want = ground(q.z);
+    const total = Object.values(got).reduce((a, v) => a + v, 0);
+    if (sameCfg(got, want)) {
+      score++;
+      $("q-msg").innerHTML = `<div class="msg good"><b>Rétt!</b><p>Stytt form: <span class="cfg">${shortHTML(q.z, want)}</span></p></div>`;
+    } else {
+      let hint = "";
+      if (total !== q.z) hint = `Þú ert með ${total} rafeindir en ${EL[q.z][1]} hefur ${q.z}.`;
+      else if (q.z === 24 || q.z === 29) hint = `${EL[q.z][1]} er undantekning: ein rafeind fer úr 4s í 3d.`;
+      else hint = "Fjöldinn er réttur en dreifingin ekki. Fylgdu orkuröðinni 1s, 2s, 2p, 3s, 3p, 4s, 3d, 4p.";
+      $("q-msg").innerHTML = `<div class="msg bad"><b>Ekki rétt.</b><p>${hint}</p><p>Rétt svar: <span class="cfg">${cfgHTML(want)}</span></p></div>`;
+    }
+    scoreTxt();
+  }
+  function answerPick(btn) {
+    if (q.done) return;
+    q.done = true; asked++;
+    const pick = Number(btn.dataset.z);
+    $("q-body").querySelectorAll(".choices .btn").forEach(b => {
+      if (Number(b.dataset.z) === q.z) b.classList.add("right");
+      b.disabled = true;
+    });
+    if (pick === q.z) {
+      score++;
+      $("q-msg").innerHTML = `<div class="msg good"><b>Rétt!</b><p>Teldu rafeindirnar: samtals ${q.z}, sem er sætistala ${EL[q.z][1]}.</p></div>`;
+    } else {
+      btn.classList.add("wrong");
+      $("q-msg").innerHTML = `<div class="msg bad"><b>Ekki rétt.</b><p>Leggðu saman veldisvísana: þeir eru samtals ${q.z}, svo þetta er ${EL[q.z][1]} (${EL[q.z][0]}).</p></div>`;
+    }
+    scoreTxt();
+  }
+  $("q-next").addEventListener("click", newQ);
+
+  // ---------- Tabs ----------
+  const views = { kanna: $("view-kanna"), byggja: $("view-byggja"), prof: $("view-prof") };
+  function show(name) {
+    for (const k in views) {
+      views[k].hidden = k !== name;
+      $("tab-" + k).setAttribute("aria-selected", String(k === name));
+    }
+    if (name === "prof" && !q) newQ();
+  }
+  for (const k in views) $("tab-" + k).addEventListener("click", () => show(k));
+
+  clearB(); renderK(); renderB();
+  setBMsg("", `Byggðu ${EL[bZ][1]} (${EL[bZ][0]})`, "Fylltu svigrúmin og ýttu á Athuga.");
+})();
+</script>
+
+</body></html>
